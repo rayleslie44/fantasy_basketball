@@ -44,6 +44,40 @@ box_stats.insert(1, 'Player', player_name)
 box_stats.insert(2, 'Pro Team', pro_team)
 box_stats.insert(3, 'Position', position)
 
+player_box_scores = box_stats.copy()
+player_box_scores.drop(['OREB', 'DREB', '', 'PF', 'GS'], axis=1, inplace=True)
+
+for col in ['FG%', 'FT%', '3PT%']:
+    player_box_scores[col] = player_box_scores[col].round(4)
+    player_box_scores[col] = player_box_scores[col].apply(lambda x: x * 100).round(4)
+
+player_box_scores['MPG'] = player_box_scores['MPG'].round(1)
+
+for col in ['PTS', 'BLK', 'STL', 'AST', 'REB', 'TO', 'FGM', 'FGA', 'FTM', 'FTA', '3PTM', '3PTA', 'MIN', 'GP']:
+    player_box_scores[col] = player_box_scores[col].astype(int)
+
+player_box_scores_df = player_box_scores.merge(teams_df)
+player_box_scores_df.drop('Team', axis=1, inplace=True)
+
+player_box_scores_df = player_box_scores_df[
+    ['Team ID', 'Player', 'Pro Team', 'Position', 'GP', 'MIN', 'MPG', 'FGM', 'FGA', 'FG%', 'FTM', 'FTA', 'FT%', 
+    '3PTM', '3PTA', '3PT%', 'REB', 'AST', 'STL', 'BLK', 'TO', 'PTS']
+    ]
+
+p_txt_cols = player_box_scores_df.iloc[:,0:4]
+p_stat_cols = player_box_scores_df.iloc[:,4:]
+
+player_box_zscores = p_stat_cols.apply(stats.zscore).round(3)
+player_box_zscores['TO'] = player_box_zscores['TO'] * -1
+player_box_zscores['GP'] = player_box_zscores['GP'].fillna(0)
+
+
+player_box_zscores_df = player_box_zscores.merge(p_txt_cols, left_index=True, right_index=True)
+player_box_zscores_df = player_box_zscores_df[
+    ['Team ID', 'Player', 'Pro Team', 'Position', 'GP', 'MIN', 'MPG', 'FGM', 'FGA', 'FG%', 'FTM', 'FTA', 'FT%', 
+    '3PTM', '3PTA', '3PT%', 'REB', 'AST', 'STL', 'BLK', 'TO', 'PTS']
+    ]
+
 box_stats.drop(['OREB', 'DREB', '', 'PF', '3PTA', 'FG%', 'FT%',
 '3PT%', 'MPG', 'MIN', 'GS', 'GP'], axis=1, inplace=True)
 
@@ -129,3 +163,5 @@ box_zscores_df = box_zscores_df[
 
 box_scores_df.to_csv('box_scores.csv', index=False)
 box_zscores_df.to_csv('box_zscores.csv', index=False)
+player_box_scores_df.to_csv('player_box_scores.csv', index=False)
+player_box_zscores_df.to_csv('player_box_zscores.csv', index=False)
