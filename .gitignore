@@ -1,0 +1,6 @@
+config.py
+__pycache__/
+box_scores.csv
+fantasy_basketball.twb
+*.twbr
+box_zscores.csv
