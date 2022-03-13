@@ -3,3 +3,5 @@ __pycache__/
 fantasy_basketball.twb
 *.twbr
 *.csv
+.ipynb_checkpoints/
+*ipynb
