@@ -1,6 +1,6 @@
 config.py
 __pycache__/
-fantasy_basketball.twb
+*.twb
 *.twbr
 *.csv
 .ipynb_checkpoints/

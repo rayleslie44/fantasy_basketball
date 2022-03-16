@@ -83,7 +83,7 @@ box_stats.drop(['OREB', 'DREB', '', 'PF', '3PTA', 'FG%', 'FT%',
 
 box_stats_df = box_stats.groupby('Team', as_index=False).sum()
 
-box_stats_df['Week'] = 20
+box_stats_df['Week'] = 21
 
 box_stats_df['FG%'] = (box_stats_df['FGM'] / box_stats_df['FGA']).round(4)
 box_stats_df['FT%'] = (box_stats_df['FTM'] / box_stats_df['FTA']).round(4)
