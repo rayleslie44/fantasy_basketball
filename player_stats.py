@@ -1,6 +1,10 @@
 import pandas as pd
 pd.set_option("display.max_rows", None, "display.max_columns", None)
 
+import scipy.stats as stats
+from numpy import std
+from numpy import mean
+
 import config
 rosters_df = config.rosters_df
 
@@ -57,7 +61,7 @@ def player_stats(x):
         df = df[
             ['Player','G','GS','MP','FG','FGA','FG%','3P','3PA','3P%','2P','2PA','2P%','eFG%','FT',
             'FTA','FT%','ORB','DRB','TRB','AST','STL','BLK','TOV','PF','PTS']
-        ]
+            ]
 
         ast_to_ratio = (df['AST'] / df['TOV']).round(1)
         df['AST/TOV'] = ast_to_ratio
@@ -71,8 +75,52 @@ def player_stats(x):
         
         return per_game_df
 
+def player_zstats(x):
+    txt_cols = x.iloc[:,:5]
+    stat_cols = x.iloc[:,5:]
+
+    stat_cols_std = std(stat_cols['MP'])
+    stat_cols_avg = mean(stat_cols['MP'])
+
+    lower_cutoff = stat_cols_avg - stat_cols_std
+    stat_cols = stat_cols[stat_cols['MP'] >= lower_cutoff]
+
+    stat_cols = stat_cols.apply(stats.zscore).round(3)
+
+    if x.shape[1] == 28: # advanced
+
+        stat_cols['TOV%'] = stat_cols['TOV%'] * -1
+
+        advanced_z = stat_cols.merge(txt_cols, left_index=True, right_index=True)
+        advanced_z = advanced_z[
+            ['Team ID', 'Player', 'Pro Team', 'Position', 'Injury Status', 'G', 'MP', 'PER', 'TS%', '3PAr', 
+            'FTr', 'ORB%', 'DRB%', 'TRB%', 'AST%', 'STL%', 'BLK%', 'TOV%', 'USG%', 'OWS', 'DWS', 'WS', 'WS/48', 
+            'OBPM', 'DBPM', 'BPM', 'VORP', 'WORP']
+            ]
+        
+        return advanced_z
+    
+    elif x.shape[1] == 31: # per_game
+
+        stat_cols['TOV'] = stat_cols['TOV'] * -1
+
+        per_game_z = stat_cols.merge(txt_cols, left_index=True, right_index=True)
+        per_game_z = per_game_z[
+            ['Team ID', 'Player', 'Pro Team', 'Position', 'Injury Status', 'G', 'GS', 'MP', 'FG', 'FGA', 'FG%', 
+            '3P', '3PA', '3P%', '2P', '2PA', '2P%', 'eFG%', 'FT', 'FTA', 'FT%', 'ORB', 'DRB', 'TRB', 'AST', 'STL', 
+            'BLK', 'TOV', 'PF', 'PTS', 'AST/TOV']
+            ]
+        
+        return per_game_z
+
 player_advanced_stats_df = player_stats('advanced')
 player_per_game_stats_df = player_stats('per_game')
 
+player_advanced_zstats_df = player_zstats(player_advanced_stats_df)
+player_per_game_zstats_df = player_zstats(player_per_game_stats_df)
+
 player_advanced_stats_df.to_csv('player_advanced_stats.csv', index=False)
 player_per_game_stats_df.to_csv('player_per_game_stats.csv', index=False)
+
+player_advanced_zstats_df.to_csv('player_advanced_zstats.csv', index=False)
+player_per_game_zstats_df.to_csv('player_per_game_zstats.csv', index=False)
