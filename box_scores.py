@@ -71,7 +71,6 @@ player_box_zscores = p_stat_cols.apply(stats.zscore).round(3)
 player_box_zscores['TO'] = player_box_zscores['TO'] * -1
 player_box_zscores['GP'] = player_box_zscores['GP'].fillna(0)
 
-
 player_box_zscores_df = player_box_zscores.merge(p_txt_cols, left_index=True, right_index=True)
 player_box_zscores_df = player_box_zscores_df[
     ['Team ID', 'Player', 'Pro Team', 'Position', 'GP', 'MIN', 'MPG', 'FGM', 'FGA', 'FG%', 'FTM', 'FTA', 'FT%', 
@@ -83,7 +82,7 @@ box_stats.drop(['OREB', 'DREB', '', 'PF', '3PTA', 'FG%', 'FT%',
 
 box_stats_df = box_stats.groupby('Team', as_index=False).sum()
 
-box_stats_df['Week'] = 22
+box_stats_df['Week'] = 23
 
 box_stats_df['FG%'] = (box_stats_df['FGM'] / box_stats_df['FGA']).round(4)
 box_stats_df['FT%'] = (box_stats_df['FTM'] / box_stats_df['FTA']).round(4)
