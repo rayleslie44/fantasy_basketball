@@ -24,10 +24,8 @@ I wrote four Python scripts to pull and prepare the data for analysis:
 
 ## Creating rankings
 
-In addition, I created a function in each script to convert team box scores and player stats to z-score values, which use a statistical measure of the distance from the mean.
-
-This type of data was useful to include in my analysis because it allowed me to create my own measures of who is better than who, rather than solely relying on standard stats.
+I created a function to convert team box scores and player stats to z-score values. This was a handy way for me to standardize the numbers so that I could create my own measures of who is better than who.
 
 ## Visualizing data
 
-Finally, I created a Tableau dashboard to visualize the data and make decisions about my team during the season. The final dashboard can be viewed here.
+Finally, I created a Tableau dashboard to visualize the data and make decisions about my team during the season. The final dashboard can be viewed [here](https://public.tableau.com/app/profile/ray.leslie/viz/fantasy_basketball/FantasyBasketballLeagueAnalysis).
