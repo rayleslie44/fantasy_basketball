@@ -39,7 +39,7 @@ def get_player_stats(year,stat_type):
     df.iloc[:, 4:] = df.iloc[:, 4:].astype(float)
 
     # update position column
-    df['Pos'] = df['Pos'].replace(['SF-SG', 'SG-PG', 'SG-SF', 'SF-PF', 'PG-SG', 'C-PF', 'PF-C', 'PF-SF', 'SG-PG-SF'], ['SF', 'SG', 'SG', 'SF', 'PG', 'C', 'PF', 'PF', 'SG'])
+    df['Pos'] = df['Pos'].replace(['SF-SG', 'SG-PG', 'SG-SF', 'SF-PF', 'PG-SG', 'C-PF', 'PF-C', 'PF-SF', 'SG-PG-SF', 'SF-C', 'SG-PF'], ['SF', 'SG', 'SG', 'SF', 'PG', 'C', 'PF', 'PF', 'SG', 'SF', 'SG'])
 
     # return data frame
     return df
@@ -52,9 +52,17 @@ def get_player_zscores(year,stat_type):
     
     # create year column
     df['Year'] = year
+
+    # if stat type equals totals, grab certain columns
+    if stat_type == 'totals':
     
-    # create copy of data frame using certain columns
-    dfc = df[['Year', 'Player', 'Pos', 'Tm', 'MP', 'eFG%', 'FT%', 'TRB', 'AST', 'STL', 'BLK', 'PTS']].copy()
+        # create copy of data frame using certain columns
+        dfc = df[['Year', 'Player', 'Pos', 'Tm', 'MP', 'eFG%', 'FT%', 'TRB', 'AST', 'STL', 'BLK', 'PTS']].copy()
+    
+    # if stat type equals advanced, grab certain columns
+    elif stat_type == 'advanced':
+
+        dfc = df[['Year', 'Player', 'Pos', 'Tm', 'MP', 'PER', 'TS%', 'USG%', 'WS', 'VORP']].copy()
     
     # split text and stat columns
     text_cols = dfc.iloc[:,:4]
@@ -70,12 +78,15 @@ def get_player_zscores(year,stat_type):
     # filter out players who did not meet minimum Minutes Played requirement
     stat_cols = stat_cols[stat_cols['MP'] >= lower_cutoff]
 
-    # drop column
-    stat_cols = stat_cols.drop('MP', axis=1)
+    # if stat type equals totals, drop column then apply zscore
+    if stat_type == 'totals':
+        
+        # drop column
+        stat_cols = stat_cols.drop('MP', axis=1)
     
     # apply z-score calculation to stat columns
     stat_cols = stat_cols.apply(stats.zscore).round(2)
-    
+
     # sum scoring stats to get overall score
     stat_cols['zScore'] = stat_cols.sum(axis=1)
 
